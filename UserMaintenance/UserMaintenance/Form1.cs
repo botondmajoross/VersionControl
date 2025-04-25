@@ -19,8 +19,9 @@ namespace UserMaintenance
         private void Form1_Load(object sender, EventArgs e)
         {
             label1.Text = Resource.FullName;
-            
+
             button1.Text = Resource.Add;
+            button2.Text = Resource.WriteToFile;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -28,9 +29,38 @@ namespace UserMaintenance
             var u = new User()
             {
                 FullName = textBox1.Text,
-                
+
             };
             users.Add(u);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+                saveFileDialog.Title = "Save Users List";
+                saveFileDialog.DefaultExt = "txt";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
+                        {
+                            foreach (var user in users)
+                            {
+                                writer.WriteLine($"ID: {user.ID}, FullName: {user.FullName}");
+                            }
+                        }
+                        MessageBox.Show("File saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
     }
 }
